@@ -7,6 +7,11 @@ export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body
 
+    if (name === "" || email === "" || password ===""){
+      return res.status(422).json({
+        message: 'Data is not valid'
+      })
+    }
     const existingUser = await prisma.user.findUnique({
       where: { email }
     })
@@ -41,7 +46,7 @@ export const register = async (req: Request, res: Response) => {
 
 
 
-export const login = async (req:Request, res:Response){
+export const login = async (req:Request, res:Response) => {
    try {
       const {email, password} = req.body
 
@@ -66,9 +71,17 @@ export const login = async (req:Request, res:Response){
       const token = jwt.sign(
          {userId:user.id},
          process.env.JWT_SECRET as string,
-         {expiresIn: '1h'}
+         {expiresIn: '7d'}
       )
-
-
+      
+      res.json({
+        message: "Login successful",
+        token
+      })
+   }
+   catch(error){
+    res.status(500).json({
+      message:"Internal Server Error"
+    })
    }
 }

@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
+import authRoutes from './routes/auth.routes.js'
 
 const app = express()
 
@@ -20,5 +21,7 @@ app.get('/health', (req: Request, res: Response) => {
     status: 'API is running'
   })
 })
+
+app.use("/api/auth", authRoutes)
 
 export default app
