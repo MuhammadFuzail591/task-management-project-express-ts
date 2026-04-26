@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { createTaskService, deleteTaskService, getTaskByIdService, getTasksService, updateTaskService } from "../services/task.services.js";
-import { CreateTaskInput } from "../types/task.types.js";
+
 
 
 export const createTask = async (req:Request, res:Response) => {
@@ -45,6 +45,13 @@ export const getTaskById = async (req:Request, res:Response) => {
    try{
       const userId = req.user?.id!;
       const {id} = req.params;
+
+      if (typeof id != "string"){
+         return res.status(400).json({
+            message:"Invalid task ID"
+         })
+      }
+
       const task = await getTaskByIdService(id,userId)
 
       if(!task){
@@ -53,7 +60,7 @@ export const getTaskById = async (req:Request, res:Response) => {
          })
       }
 
-      res.status(201).json({
+      res.status(200).json({
          success:true,
          data:task
       });
@@ -70,6 +77,12 @@ export const updateTask = async (req:Request, res:Response) => {
    try{
       const userId = req.user?.id!;
       const {id} = req.params;
+
+      if (typeof id != "string"){
+         return res.status(400).json({
+            message:"Invalid task ID"
+         })
+      }
       const result = await updateTaskService(id,userId,req.body)
 
       if(result.count === 0){
@@ -78,7 +91,7 @@ export const updateTask = async (req:Request, res:Response) => {
          })
       }
 
-      res.status(201).json({
+      res.status(200).json({
          success:true,
          message:"Task updated"
       });
@@ -95,6 +108,12 @@ export const deleteTask = async (req:Request, res:Response) => {
    try{
       const userId = req.user?.id!;
       const {id} = req.params;
+
+      if (typeof id != "string"){
+         return res.status(400).json({
+            message:"Invalid task ID"
+         })
+      }
       const task = await deleteTaskService(id,userId)
 
       if(!task){
@@ -103,7 +122,7 @@ export const deleteTask = async (req:Request, res:Response) => {
          })
       }
 
-      res.status(201).json({
+      res.status(200).json({
          success:true,
          message:"Task deleted"
       });
