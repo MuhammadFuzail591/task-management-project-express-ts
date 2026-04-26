@@ -45,7 +45,6 @@ export const getTaskById = async (req:Request, res:Response) => {
    try{
       const userId = req.user?.id!;
       const {id} = req.params;
-      console.log(id)
       const task = await getTaskByIdService(id,userId)
 
       if(!task){
