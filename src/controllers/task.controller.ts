@@ -1,47 +1,116 @@
-import {prisma} from '../config/prisma.js'
-import { CreateTaskInput } from '../types/task.types.js'
+import { Request, Response } from "express";
+import { createTaskService, deleteTaskService, getTaskByIdService, getTasksService, updateTaskService } from "../services/task.services.js";
+import { CreateTaskInput } from "../types/task.types.js";
 
 
-export const createTaskService = async(data:CreateTaskInput, userId:string) => {
-   return prisma.task.create({
-      data:{
-         ...data,
-         userId
+export const createTask = async (req:Request, res:Response) => {
+   try{
+      const userId = req.user?.id!;
+      const task = await createTaskService(req.body,userId)
+
+      res.status(201).json({
+         success:true,
+         data:task
+      });
+
+
+   }catch{
+      res.status(500).json({
+         message:"Error Creating Task"
+      })
+   }
+}
+
+
+export const getTasks = async (req:Request, res:Response) => {
+   try{
+      const userId = req.user?.id!;
+      const tasks = await getTasksService(userId)
+
+      res.status(201).json({
+         success:true,
+         data:tasks
+      });
+
+
+   }catch{
+      res.status(500).json({
+         message:"Error Getting Tasks"
+      })
+   }
+}
+
+export const getTaskById = async (req:Request, res:Response) => {
+   try{
+      const userId = req.user?.id!;
+      const {id} = req.params;
+      const task = await getTaskByIdService(id[0],userId)
+
+      if(!task){
+         return res.status(404).json({
+            message:"Task not found"
+         })
       }
-   })
+
+      res.status(201).json({
+         success:true,
+         data:task
+      });
+
+
+   }catch{
+      res.status(500).json({
+         message:"Error fetching Task"
+      })
+   }
 }
 
-export const getTaskService = async(userId:string) => {
-   return prisma.task.findMany({
-      where:{userId},
-      orderBy:{createdAt:"desc"}
-   })
-}
+export const updateTask = async (req:Request, res:Response) => {
+   try{
+      const userId = req.user?.id!;
+      const {id} = req.params;
+      const result = await updateTaskService(id[0],userId,req.body)
 
-export const getTaskByIdService = async(taskId:string, userId:string) => {
-   return prisma.task.findFirst({
-      where:{
-         id:taskId,
-         userId
+      if(result.count === 0){
+         return res.status(404).json({
+            message:"Task not found"
+         })
       }
-   })
+
+      res.status(201).json({
+         success:true,
+         message:"Task updated"
+      });
+
+
+   }catch{
+      res.status(500).json({
+         message:"Error Updating Task"
+      })
+   }
 }
 
-export const updateTaskService = async(taskId:string, userId:string, data:Partial<CreateTaskInput>) => {
-   return prisma.task.updateMany({
-      where:{
-         id:taskId,
-         userId
-      },
-      data,
-   })
-}
+export const deleteTask = async (req:Request, res:Response) => {
+   try{
+      const userId = req.user?.id!;
+      const {id} = req.params;
+      const task = await deleteTaskService(id[0],userId)
 
-export const deleteTaskService = async(taskId:string, userId:string) => {
-   return prisma.task.deleteMany({
-      where:{
-         id:taskId,
-         userId
+      if(!task){
+         return res.status(404).json({
+            message:"Task not found"
+         })
       }
-   })
+
+      res.status(201).json({
+         success:true,
+         message:"Task deleted"
+      });
+
+
+   }catch{
+      res.status(500).json({
+         message:"Error Deleting Task"
+      })
+   }
 }

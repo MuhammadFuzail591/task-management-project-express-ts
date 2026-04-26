@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import 'dotenv/config'
 import { AuthPayload } from "../types/express.js";
 
-export const authenticate = (
+export const authMiddleware = (
    req: Request,
    res: Response,
    next: NextFunction

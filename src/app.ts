@@ -3,7 +3,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
 import authRoutes from './routes/auth.routes.js'
-
+import taskRoutes from './routes/task.routes.js'
 const app = express()
 
 const limiter = rateLimit({
@@ -23,5 +23,6 @@ app.get('/health', (req: Request, res: Response) => {
 })
 
 app.use("/api/auth", authRoutes)
+app.use("/api/task",taskRoutes);
 
 export default app
