@@ -25,6 +25,7 @@ export const createTask = async (req:Request, res:Response) => {
 export const getTasks = async (req:Request, res:Response) => {
    try{
       const userId = req.user?.id!;
+
       const tasks = await getTasksService(userId)
 
       res.status(201).json({
@@ -44,7 +45,8 @@ export const getTaskById = async (req:Request, res:Response) => {
    try{
       const userId = req.user?.id!;
       const {id} = req.params;
-      const task = await getTaskByIdService(id[0],userId)
+      console.log(id)
+      const task = await getTaskByIdService(id,userId)
 
       if(!task){
          return res.status(404).json({
@@ -69,7 +71,7 @@ export const updateTask = async (req:Request, res:Response) => {
    try{
       const userId = req.user?.id!;
       const {id} = req.params;
-      const result = await updateTaskService(id[0],userId,req.body)
+      const result = await updateTaskService(id,userId,req.body)
 
       if(result.count === 0){
          return res.status(404).json({
@@ -94,7 +96,7 @@ export const deleteTask = async (req:Request, res:Response) => {
    try{
       const userId = req.user?.id!;
       const {id} = req.params;
-      const task = await deleteTaskService(id[0],userId)
+      const task = await deleteTaskService(id,userId)
 
       if(!task){
          return res.status(404).json({
