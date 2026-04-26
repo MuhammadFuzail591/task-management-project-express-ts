@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt'
 import { prisma } from '../config/prisma.js'
 import jwt from "jsonwebtoken"
 import 'dotenv/config'
+
 export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body
@@ -12,6 +13,7 @@ export const register = async (req: Request, res: Response) => {
         message: 'Data is not valid'
       })
     }
+    
     const existingUser = await prisma.user.findUnique({
       where: { email }
     })
