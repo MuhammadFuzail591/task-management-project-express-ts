@@ -5,3 +5,11 @@ export interface CreateTaskInput {
    priority?:"low" | "medium" | "high";
    dueDate?:Date;
 }
+
+export interface QueryParamsType {
+   page?:string;
+   limit?:string;
+   status?:string;
+   priority?:string;
+   sort?:string;
+}

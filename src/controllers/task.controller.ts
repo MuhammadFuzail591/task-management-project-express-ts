@@ -26,7 +26,7 @@ export const getTasks = async (req:Request, res:Response) => {
    try{
       const userId = req.user?.id!;
 
-      const tasks = await getTasksService(userId)
+      const tasks = await getTasksService(userId, req.query)
 
       res.status(201).json({
          success:true,
