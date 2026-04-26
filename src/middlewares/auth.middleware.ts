@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import 'dotenv/config'
+import { AuthPayload } from "../types/express.js";
 
 export const authenticate = (
    req: Request,
@@ -21,13 +22,13 @@ export const authenticate = (
       const decoded = jwt.verify(
          token,
          process.env.JWT_SECRET as string
-      )
+      ) as AuthPayload;
 
       req.user = decoded
       
       next()
    }catch{
-      res.status(401).json({
+      return res.status(401).json({
          message: "Invalid Token"
       })
    }

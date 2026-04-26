@@ -13,7 +13,7 @@ export const register = async (req: Request, res: Response) => {
         message: 'Data is not valid'
       })
     }
-    
+
     const existingUser = await prisma.user.findUnique({
       where: { email }
     })
@@ -71,7 +71,7 @@ export const login = async (req:Request, res:Response) => {
       }
 
       const token = jwt.sign(
-         {userId:user.id},
+         {id:user.id, email:user.email},
          process.env.JWT_SECRET as string,
          {expiresIn: '7d'}
       )
