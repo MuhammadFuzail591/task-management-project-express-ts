@@ -4,6 +4,16 @@ import { createTask, deleteTask, getTaskById, getTasks, updateTask } from "../co
 import { createTaskSchema, updateTaskSchema } from "../validators/task.validation.js";
 import { validate } from "../middlewares/validate.middleware.js";
 
+/**
+ * @swagger
+ * /:
+ *    get:
+ *       summary:Get alll tasks
+ *       responses:
+ *          200:
+ *             description:Success
+ */
+
 
 const router = Router();
 

@@ -5,6 +5,14 @@ import { loginSchema, registerSchema } from '../validators/auth.validation.js';
 
 const router = Router();
 
+/**
+ * @swagger
+ * /register:
+ *    post:
+ *    
+ */
+
+
 router.post("/register",validate(registerSchema), register)
 router.post("/login",validate(loginSchema), login)
 
