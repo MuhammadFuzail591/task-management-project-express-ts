@@ -28,7 +28,7 @@ export const getTasks = async (req:Request, res:Response) => {
 
       const tasks = await getTasksService(userId, req.query)
 
-      res.status(201).json({
+      res.status(200).json({
          success:true,
          data:tasks
       });
