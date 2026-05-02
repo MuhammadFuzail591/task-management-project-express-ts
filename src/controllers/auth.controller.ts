@@ -92,16 +92,16 @@ export const login = async (req:Request, res:Response) => {
 
 export const googleAuth = (req:Request, res:Response) => {
   const redirectUrl = "https://accounts.google.com/o/oauth2/v2/auth";
-
+  
   const params = new URLSearchParams({
     client_id: process.env.GOOGLE_CLIENT_ID!,
-    redirect_uri:"https://localhost:5000/auth/google/callback",
-    response-type:"code",
+    redirect_uri:"http://localhost:5000/auth/google/callback",
+    response_type:"code",
     scope:"openid email profile",
     access_token:"offline",
     prompt:"consent",
   })
-
+  
   res.redirect(`${redirectUrl}?${URLSearchParams.toString()}`)
 }
 
