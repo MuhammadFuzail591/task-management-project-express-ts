@@ -99,7 +99,21 @@ router.post("/register",validate(registerSchema), register)
  */
 router.post("/login",validate(loginSchema), login)
 
+/**
+ * @swagger
+ * /auth/google:
+ *   get:
+ *     summary: Login with Google
+ *     description: Redirects the user to Google OAuth consent screen for authentication.
+ *     tags:
+ *       - Auth
+ *     responses:
+ *       302:
+ *         description: Redirect to Google OAuth server
+ */
 router.get("/google", googleAuth);
+
+
 router.get("/google/callback", googleCallback)
 
 
