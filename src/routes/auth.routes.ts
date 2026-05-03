@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import { login, register } from '../controllers/auth.controller.js';
+import { login, register, googleAuth, googleCallback } from '../controllers/auth.controller.js';
 import { validate } from '../middlewares/validate.middleware.js';
 import { loginSchema, registerSchema } from '../validators/auth.validation.js';
 
@@ -98,5 +98,10 @@ router.post("/register",validate(registerSchema), register)
  *         description: Internal server error
  */
 router.post("/login",validate(loginSchema), login)
+
+router.get("/google", googleAuth);
+router.get("/google/callback", googleCallback)
+
+
 
 export default router;

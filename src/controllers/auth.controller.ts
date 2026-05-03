@@ -54,6 +54,12 @@ export const login = async (req:Request, res:Response) => {
    try {
       const {email, password} = req.body
 
+      if (email === "" || password ===""){
+      return res.status(422).json({
+        message: 'Data is not valid'
+      })
+    }
+
       const user = await prisma.user.findUnique({
          where:{email}
       })
@@ -64,7 +70,7 @@ export const login = async (req:Request, res:Response) => {
          })
       }
 
-      const isValid = await bcrypt.compare(password, user.password)
+      const isValid = await bcrypt.compare(password, user.password!)
 
       if (!isValid){
          return res.status(400).json({
@@ -97,14 +103,13 @@ export const googleAuth = (req:Request, res:Response) => {
   
   const params = new URLSearchParams({
     client_id: process.env.GOOGLE_CLIENT_ID!,
-    redirect_uri:"http://localhost:5000/auth/google/callback",
+    redirect_uri:"http://localhost:5000/api/auth/google/callback",
     response_type:"code",
     scope:"openid email profile",
-    access_token:"offline",
     prompt:"consent",
   })
   
-  res.redirect(`${redirectUrl}?${URLSearchParams.toString()}`)
+  res.redirect(`${redirectUrl}?${params.toString()}`)
 }
 
 
@@ -118,8 +123,9 @@ export const googleCallback = async (req:Request, res:Response) => {
         code,
         client_id:process.env.GOOGLE_CLIENT_ID,
         client_secret:process.env.GOOGLE_CLIENT_SECRET,
-        redirect_uri:"http://localhost:5000/auth/google/callback",
-        grant_type:"authorization_code"
+        redirect_uri:"http://localhost:5000/api/auth/google/callback",
+        grant_type:"authorization_code",
+        response_type:"code"
       }
     );
 
@@ -135,7 +141,39 @@ export const googleCallback = async (req:Request, res:Response) => {
       }
     )
 
-    
+    if (user) {
+      if (!user.providerId) {
+        user = await prisma.user.update({
+          where:{id:user.id},
+          data:{
+            provider:"google",
+            providerId:sub
+          }
+        })
+      }
+    }else{
+      user = await prisma.user.create({
+        data:{
+          email,
+          name,
+          provider:"google",
+          providerId:sub
+        }
+      })
+    }
 
+    const token  = jwt.sign(
+      {userId:user.id},
+      process.env.JWT_SECRET!,
+      {expiresIn:"7d"}
+    )
+
+    res.status(201).json({
+      message:"Login Successful",
+      token
+    })
+  }catch(error){
+    console.error(error)
+    res.status(500).json({message:"OAuth Failed"})
   }
 }
