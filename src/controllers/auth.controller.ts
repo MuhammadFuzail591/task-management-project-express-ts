@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt'
 import { prisma } from '../config/prisma.js'
 import jwt from "jsonwebtoken"
 import 'dotenv/config'
+import axios from 'axios'
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -30,7 +31,8 @@ export const register = async (req: Request, res: Response) => {
       data: {
         name,
         email,
-        password: hashedPassword
+        password: hashedPassword,
+        provider: "local"
       }
     })
 
@@ -105,3 +107,35 @@ export const googleAuth = (req:Request, res:Response) => {
   res.redirect(`${redirectUrl}?${URLSearchParams.toString()}`)
 }
 
+
+export const googleCallback = async (req:Request, res:Response) => {
+  const code = req.query.code as string;
+
+  try{
+    const tokenRes = await axios.post(
+      "https://oauth2.googleapis.com/token",
+      {
+        code,
+        client_id:process.env.GOOGLE_CLIENT_ID,
+        client_secret:process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri:"http://localhost:5000/auth/google/callback",
+        grant_type:"authorization_code"
+      }
+    );
+
+    const {id_token} = tokenRes.data;
+
+    const googleUser:any = jwt.decode(id_token)
+
+    const {email, name, sub} = googleUser;
+
+    let user = await prisma.user.findUnique(
+      {
+        where: {email}
+      }
+    )
+
+    
+
+  }
+}
