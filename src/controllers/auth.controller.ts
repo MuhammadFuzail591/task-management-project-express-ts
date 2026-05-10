@@ -4,6 +4,8 @@ import { prisma } from '../config/prisma.js'
 import jwt from "jsonwebtoken"
 import 'dotenv/config'
 import axios from 'axios'
+import { generateResetToken } from '../utils/generateToken.js'
+import { transporter } from '../services/email.service.js'
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -46,8 +48,6 @@ export const register = async (req: Request, res: Response) => {
     })
   }
 }
-
-
 
 
 export const login = async (req:Request, res:Response) => {
@@ -95,7 +95,6 @@ export const login = async (req:Request, res:Response) => {
     })
    }
 }
-
 
 
 export const googleAuth = (req:Request, res:Response) => {
@@ -175,5 +174,70 @@ export const googleCallback = async (req:Request, res:Response) => {
   }catch(error){
     console.error(error)
     res.status(500).json({message:"OAuth Failed"})
+  }
+}
+
+
+export const forgotPassword = async (req:Request, res:Response) => {
+  try{
+    const {email} = req.body;
+
+    const user = await prisma.user.findUnique({
+      where:{email}
+    })
+
+    if(!user){
+      return res.status(200).json({
+        message:"If email exists, Password reset email is sent"
+      })
+    }
+
+    await prisma.passwordResetToken.deleteMany({
+      where:{userId:user.id}
+    })
+
+    const resetToken = generateResetToken();
+
+    const expiresAt = new Date(
+      Date.now() + 15 * 60 * 1000
+    )
+
+    await prisma.passwordResetToken.create({
+      data:{
+        token:resetToken,
+        userId: user.id,
+        expiresAt
+      }
+    })
+
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+
+    await transporter.sendMail({
+      from:process.env.EMAIL_USER,
+
+      to: user.email,
+
+      subject: "Task Management App Password Reset",
+
+      html:`
+        <h2> Password Reset </h2>
+
+        <p>Click below to reset your password</p>
+
+        <a href="${resetLink}">
+          Reset Password
+        </a>
+      `,
+    })
+
+    return res.status(200).json({
+      message:"If account exists, password reset email sent"
+    })
+
+  }catch(error){
+    res.status(500).json({
+      success:false,
+      message: "Internal Server Error"
+    })
   }
 }
