@@ -123,7 +123,7 @@ router.post(
 )
 
 router.post(
-   "reset-password",
+   "/reset-password",
    resetPassword
 )
 

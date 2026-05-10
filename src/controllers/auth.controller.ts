@@ -243,6 +243,7 @@ export const forgotPassword = async (req:Request, res:Response) => {
 }
 
 export const resetPassword = async (req:Request, res:Response) => {
+
   try{
     const {token, newPassword} = req.body;
 
@@ -282,9 +283,6 @@ export const resetPassword = async (req:Request, res:Response) => {
     })
 
   }catch(error){
-    
-    console.log(error)
-
 
     res.status(500).json({
       success:false,
