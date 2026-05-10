@@ -241,3 +241,54 @@ export const forgotPassword = async (req:Request, res:Response) => {
     })
   }
 }
+
+export const resetPassword = async (req:Request, res:Response) => {
+  try{
+    const {token, newPassword} = req.body;
+
+    const storedToken = await prisma.passwordResetToken.findFirst({
+      where:{token}
+    })
+
+    if(!storedToken){
+      return res.status(400).json({
+        message:"Invalid Token"
+      })
+    }
+
+    if(storedToken.expiresAt < new Date()){
+      return res.status(400).json({
+        message:"Token Expired"
+      })
+    }
+
+    const hashedPassword = bcrypt.hash(newPassword, 10)
+
+    await prisma.user.update({
+      where:{
+        id:storedToken.userId
+      },
+      data:{
+        password: newPassword
+      }
+    })
+
+    await prisma.passwordResetToken.delete({
+      where:{id:storedToken.id}
+    })
+
+    return res.status(200).json({
+      message:"Password Reset successful"
+    })
+
+  }catch(error){
+    
+    console.log(error)
+
+
+    res.status(500).json({
+      success:false,
+      message: "Internal Server Error"
+    })
+  }
+}
