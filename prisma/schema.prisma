@@ -24,6 +24,7 @@ model User {
 
   createdAt DateTime @default(now())
   tasks     Task[]
+  passwordResetTokens PasswordResetToken[]
 }
 
 model Task {
@@ -38,4 +39,15 @@ model Task {
 
   userId      String
   user        User     @relation(fields: [userId], references: [id])
+}
+
+model PasswordResetToken {
+  id  String  @id  @default(cuid())
+
+  token String 
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+
+  userId  String
+  user  User  @relation(fields:[userId], references:[id], onDelete:Cascade)
 }
