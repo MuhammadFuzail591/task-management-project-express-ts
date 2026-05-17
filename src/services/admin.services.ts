@@ -16,3 +16,38 @@ export const deleteUserService = async(userId:string) => {
    })
 }
 
+export const getAllTasksService = async () => {
+  return await prisma.task.findMany({
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+};
+
+export const getTaskByIdService = async (id: string) => {
+  return await prisma.task.findUnique({
+    where: { id },
+
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+};
+
+export const deleteTaskService = async (id: string) => {
+  return await prisma.task.delete({
+    where: { id },
+  });
+};
