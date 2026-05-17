@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit'
 import authRoutes from './routes/auth.routes.js'
 import taskRoutes from './routes/task.routes.js'
 import adminRoutes from './routes/admin.routes.js'
+import accountRoutes from './routes/account.routes.js'
 import swaggerUi from 'swagger-ui-express'
 import swaggerJsdoc from 'swagger-jsdoc'
 const app = express()
@@ -64,5 +65,6 @@ app.use("/api/task",taskRoutes);
 
 app.use("/api/admin", adminRoutes)
 
+app.use("/api/account",accountRoutes)
 
 export default app
