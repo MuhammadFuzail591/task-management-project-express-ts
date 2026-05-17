@@ -36,7 +36,7 @@ export const getTasks = async (req:Request, res:Response) => {
 
    }catch{
       res.status(500).json({
-         message:"Error Getting Tasks"
+         message:"Internal Server Error"
       })
    }
 }
@@ -130,7 +130,7 @@ export const deleteTask = async (req:Request, res:Response) => {
 
    }catch{
       res.status(500).json({
-         message:"Error Deleting Task"
+         message:"Internal Server Error"
       })
    }
 }
