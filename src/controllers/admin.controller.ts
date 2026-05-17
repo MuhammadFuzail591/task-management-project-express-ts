@@ -36,7 +36,12 @@ export const getSingleUser = async(req:Request, res:Response) => {
          data: user
       })
 
-   }catch(error){
+   }catch(error:any){
+
+      if(error.code === 'P2025'){
+         return res.status(404).json({success:false, message:"User not Found"})
+      }
+
       res.status(500).json({
          success:false,
          message: "Internal Server Error"
@@ -55,14 +60,7 @@ export const deleteUser = async(req:Request, res:Response) => {
          })
       }
 
-      const user = await deleteUserService(id);
-      
-      if(!user){
-         return res.status(404).json({
-            success:false,
-            message:"User Not Found"
-         })
-      }
+      await deleteUserService(id);
 
 
       res.status(200).json({
@@ -70,10 +68,16 @@ export const deleteUser = async(req:Request, res:Response) => {
          message:"User Deleted successfuly"
       })
 
-   }catch(error){
+   }catch(error:any){
+
+      if(error.code === 'P2025'){
+         return res.status(404).json({success:false, message:"User not Found"})
+      }
+
       res.status(500).json({
          success:false,
          message: "Internal Server Error"
       })
    }
 }
+
